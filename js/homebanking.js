@@ -1,21 +1,22 @@
 //Declaración de variables
 var nombreUsuario = "Gabriel Ríos";
-var saldoCuenta = 1000;
+var saldoCuenta = 10000;
 var limiteExtraccion = 3000;
-var servicioAgua = 350;
-var servicioTelefono = 425;
-var servicioLuz = 210;
-var servicioInternet = 570;
+var precioAgua = 350;
+var precioTelefono = 425;
+var precioLuz = 210;
+var precioInternet = 570;
 
 
 //Ejecución de las funciones que actualizan los valores de las variables en el HTML.
 window.onload = function() {
+    iniciarSesion();
     cargarNombreEnPantalla();
     actualizarSaldoEnPantalla();
     actualizarLimiteEnPantalla();
 }
 
-//
+//funciones que serán utilizadas para sumar y restar dinero tanto en deposito como en extracción.
 function agregarDinero(dinero) {
   saldoCuenta += dinero;
   return saldoCuenta;
@@ -42,14 +43,26 @@ function extraerDinero() {
   var dinero = prompt("Ingrese dinero a extraer:");
   var dineroAExtraer = parseInt(dinero);
 
-  restarDinero(dineroAExtraer);
+  if(dineroAExtraer % 100 == 0 && dineroAExtraer <= limiteExtraccion){
+    procedimientoExtraccion();
+  }else if (dineroAExtraer % 100 != 0){
+    alert("Solo puedes sacar billetes de 100.");
+  }else if (dineroAExtraer > limiteExtraccion) {
+    alert("La cantidad de dinero que quieres extraer es mayor a tu límite de extracción.");
+  }
 
-  alert("Has extraído: $" + dineroAExtraer +
-  ".\nSaldo anterior: $" + saldoAnterior +
-  ".\nSaldo actual: $" + saldoCuenta + ".");
+  function procedimientoExtraccion(){
+    if (dineroAExtraer > saldoAnterior) {
+      alert("No hay saldo en tu cuenta para extraer esa cantidad de dinero.");
+    }else{
+      saldoCuenta = restarDinero(dineroAExtraer);
 
-
-  actualizarSaldoEnPantalla();
+      alert("Has extraído: $" + dineroAExtraer +
+      ".\nSaldo anterior: $" + saldoAnterior +
+      ".\nSaldo actual: $" + saldoCuenta + ".");
+      actualizarSaldoEnPantalla();
+    }
+  }
 }
 
 function depositarDinero() {
@@ -71,78 +84,57 @@ function pagarServicio() {
 
   var servicios = prompt ("Ingrese el número que corresponda con el servicio que querés pagar.\n1 - Agua\n2 - Luz\n3 - Internet\n4 - Teléfono");
 
-  pagoServicios = parseInt(servicios);
+  deudaServicios = parseInt(servicios);
 
   saldoAnterior = saldoCuenta;
 
-  switch (pagoServicios) {
+  switch (deudaServicios) {
     case 1:
-      pagarAgua();
+      debitarServicio(precioAgua,"Agua");
     break;
     case 2:
-      pagarLuz();
+      debitarServicio(precioLuz,"Luz");
     break;
     case 3:
-      pagarInternet();
+      debitarServicio(precioInternet,"Internet");
     break;
     case 4:
-      pagarTelefono();
+      debitarServicio(precioTelefono,"Teléfono");
     break;
     default:
-    alert("No existe el servicio que seleccionaste");
+      alert("No existe el servicio que seleccionaste");
   }
 
   actualizarSaldoEnPantalla();
 
-  function pagarAgua(){
-    if(saldoCuenta < servicioAgua){
-      alert("No hay suficiente saldo en tu cuenta para pagar este servicio.");
+  function debitarServicio(valorServicio, nombreServicio){
+    if(saldoCuenta < valorServicio){
+    alert("No hay suficiente saldo en tu cuenta para pagar este servicio.");
     }else{
-      saldoCuenta -= servicioAgua;
-      alert("Has pagado el servicio de agua.\nSaldo anterior: $" + saldoAnterior +
-      ".\nDinero descontado: $" + servicioAgua + ".\nSaldo actual: $" + saldoCuenta + ".");
+    restarDinero(valorServicio);
+    alert("Has pagado el servicio de " + nombreServicio + ".\nSaldo anterior: $" + saldoAnterior +
+    ".\nDinero descontado: $" + valorServicio + ".\nSaldo actual: $" + saldoCuenta + ".");
     }
   }
-
-  function pagarLuz(){
-    if(saldoCuenta < servicioLuz){
-      alert("No hay suficiente saldo en tu cuenta para pagar este servicio.");
-    }else{
-      saldoCuenta -= servicioLuz;
-      alert("Has pagado el servicio de luz.\nSaldo anterior: $" + saldoAnterior +
-      ".\nDinero descontado: $" + servicioLuz + ".\nSaldo actual: $" + saldoCuenta + ".");
-    }
-  }
-
-  function pagarInternet(){
-    if(saldoCuenta < servicioInternet){
-      alert("No hay suficiente saldo en tu cuenta para pagar este servicio.");
-    }else{
-      saldoCuenta -= servicioInternet;
-      alert("Has pagado el servicio de Internet.\nSaldo anterior: $" + saldoAnterior +
-      ".\nDinero descontado: $" + servicioInternet + ".\nSaldo actual: $" + saldoCuenta + ".");
-    }
-  }
-
-  function pagarTelefono(){
-    if(saldoCuenta < servicioTelefono){
-      alert("No hay suficiente saldo en tu cuenta para pagar este servicio.");
-    }else{
-      saldoCuenta -= servicioTelefono;
-      alert("Has pagado el servicio de teléfono.\nSaldo anterior: $" + saldoAnterior +
-      ".\nDinero descontado: $" + servicioTelefono + ".\nSaldo actual: $" + saldoCuenta + ".");
-    }
-  }
-
 }
-
-
 
 function transferirDinero() {
 
 }
 
 function iniciarSesion() {
+
+  var codigoSeguridad = "6789";
+  var codigo = prompt("Ingresa tu código de seguridad:");
+
+  if (codigoSeguridad == codigo) {
+    alert("Bienvenido/a Gabriel Ríos, ya puedes comenzar a realizar operaciones.");
+  }else{
+    saldoCuenta = 0;
+    nombreUsuario = " ";
+    limiteExtraccion = 0;
+    alert("Código incorrecto. Tu dinero ha sido retenido por cuestiones de seguridad.");
+  }
 
 }
 
