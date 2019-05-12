@@ -1,11 +1,17 @@
 //Declaración de variables
 var nombreUsuario = "Gabriel Ríos";
-var saldoCuenta = 10000;
+var saldoCuenta = 5000;
 var limiteExtraccion = 3000;
+
+//Variables que contienen los precios de los servicios a pagar.
 var precioAgua = 350;
 var precioTelefono = 425;
 var precioLuz = 210;
 var precioInternet = 570;
+
+//Variables que contienen número de las cuentas para realizar transferencias.
+var cuentaAmiga1 = "1234567";
+var cuentaAmiga2 = "7654321";
 
 
 //Ejecución de las funciones que actualizan los valores de las variables en el HTML.
@@ -16,7 +22,7 @@ window.onload = function() {
     actualizarLimiteEnPantalla();
 }
 
-//funciones que serán utilizadas para sumar y restar dinero tanto en deposito como en extracción.
+//Funciones que serán utilizadas para sumar y restar dinero tanto en deposito como en extracción.
 function agregarDinero(dinero) {
   saldoCuenta += dinero;
   return saldoCuenta;
@@ -29,8 +35,14 @@ function restarDinero(dinero) {
 
 //Funciones que tenes que completar
 function cambiarLimiteDeExtraccion() {
+
   var nuevoLimite = prompt("Ingrese nuevo límite de extracción:");
+
   limiteExtraccion = parseInt(nuevoLimite);
+
+  if(!Boolean(limiteExtraccion)){
+    return;
+  }
 
   actualizarLimiteEnPantalla();
 
@@ -42,6 +54,10 @@ function extraerDinero() {
   var saldoAnterior = saldoCuenta;
   var dinero = prompt("Ingrese dinero a extraer:");
   var dineroAExtraer = parseInt(dinero);
+
+  if (!Boolean(dineroAExtraer)) {
+  return;
+  }
 
   if(dineroAExtraer % 100 == 0 && dineroAExtraer <= limiteExtraccion){
     procedimientoExtraccion();
@@ -55,7 +71,7 @@ function extraerDinero() {
     if (dineroAExtraer > saldoAnterior) {
       alert("No hay saldo en tu cuenta para extraer esa cantidad de dinero.");
     }else{
-      saldoCuenta = restarDinero(dineroAExtraer);
+      restarDinero(dineroAExtraer);
 
       alert("Has extraído: $" + dineroAExtraer +
       ".\nSaldo anterior: $" + saldoAnterior +
@@ -70,6 +86,10 @@ function depositarDinero() {
   var saldoAnterior = saldoCuenta;
   var dinero = prompt("Ingrese dinero a depositar:");
   var dineroADepositar = parseInt(dinero);
+
+  if(!Boolean(dineroADepositar)){
+    return;
+  }
 
   agregarDinero(dineroADepositar);
 
@@ -87,6 +107,10 @@ function pagarServicio() {
   deudaServicios = parseInt(servicios);
 
   saldoAnterior = saldoCuenta;
+
+  if(!Boolean(servicios)){
+    return;
+  }
 
   switch (deudaServicios) {
     case 1:
@@ -120,6 +144,30 @@ function pagarServicio() {
 
 function transferirDinero() {
 
+  saldoAnterior = saldoCuenta;
+
+  var dinero = prompt("Ingrese dinero a transferir: ");
+  var dineroATransferir = parseInt(dinero);
+
+  if(!Boolean(dineroATransferir)){
+    return;
+  }
+
+  if(dineroATransferir > saldoCuenta){
+    alert("No tienes dinero suficiente para realizar una transferencia");
+  }else{
+    var cuenta = prompt("Ingrese número de cuenta para realizar trasferencia:");
+
+    if(cuenta === cuentaAmiga1 || cuenta === cuentaAmiga2){
+      restarDinero(dinero);
+      alert("Se han transferido: $" + dinero + ".\nCuenta destino: " + cuenta);
+
+      actualizarSaldoEnPantalla();
+    }else{
+      alert("Solo puedes transferir dinero a una cuenta amiga");
+    }
+  }
+
 }
 
 function iniciarSesion() {
@@ -127,11 +175,17 @@ function iniciarSesion() {
   var codigoSeguridad = "6789";
   var codigo = prompt("Ingresa tu código de seguridad:");
 
+  if(!Boolean(codigo)){
+    saldoCuenta = 0;
+    nombreUsuario = "";
+    limiteExtraccion = 0;
+  }
+
   if (codigoSeguridad == codigo) {
-    alert("Bienvenido/a Gabriel Ríos, ya puedes comenzar a realizar operaciones.");
+    alert("Bienvenido/a "+ nombreUsuario + "ya puedes comenzar a realizar operaciones.");
   }else{
     saldoCuenta = 0;
-    nombreUsuario = " ";
+    nombreUsuario = "";
     limiteExtraccion = 0;
     alert("Código incorrecto. Tu dinero ha sido retenido por cuestiones de seguridad.");
   }
